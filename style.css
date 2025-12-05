@@ -286,7 +286,7 @@ p {
 /* ==================== BUTTONS ==================== */
 .btn {
   display: inline-block;
-  padding: var(--space-md) var(--space-xl);
+  padding: var(--space-sm) var(--space-md);
   font-size: var(--text-sm);
   font-weight: 400;
   letter-spacing: 0.1em;
