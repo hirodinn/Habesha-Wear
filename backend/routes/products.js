@@ -1,5 +1,5 @@
 import express from "express";
-import { Product, validateNewProduct } from "../models/product.js";
+import { Product, validateNewProduct } from "../model/product.js";
 import { validateId } from "../utils/validateId.js";
 
 const router = express.Router();
@@ -38,3 +38,5 @@ router.post("/", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+export default router;

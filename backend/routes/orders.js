@@ -1,6 +1,6 @@
 import express from "express";
 import { validateId } from "../utils/validateId.js";
-import Order, { validateNewOrder } from "../model/order.js";
+import { Order, validateNewOrder } from "../model/order.js";
 
 const router = express.Router();
 
@@ -68,3 +68,4 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+export default router;
