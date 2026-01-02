@@ -1,13 +1,33 @@
 import express from "express";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { User, validateNewUser, validateUserLogin } from "../model/user.js";
 import { validateId } from "../utils/validateId.js";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const users = await User.find();
-  res.send(users);
+  res.set({
+    "Cache-Control": "no-store",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
+  const token = req.cookies.token;
+  if (!token)
+    return res.status(401).json({ success: false, message: "Access denied" });
+  const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+  if (decoded.role !== "admin" && decoded.role !== "owner")
+    return res.status(403).json({
+      success: false,
+      message: "Only Admins and Owners are allowed to see all users",
+    });
+
+  try {
+    const users = await User.find();
+    res.send(users);
+  } catch (err) {
+    res.status(500).send({ success: false, message: err.message });
+  }
 });
 
 router.get("/me", async (req, res) => {
@@ -19,13 +39,15 @@ router.get("/me", async (req, res) => {
   const token = req.cookies.token;
   if (!token)
     return res.status(401).json({ success: false, message: "Access denied" });
+  const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+
   try {
-    const user = await User.findByToken(token).select("-password");
+    const user = await User.findById(decoded._id).select("-password");
     if (!user)
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
-    res.send(user);
+    else res.send(user);
   } catch (err) {
     res.status(500).json({ success: false, message: "Server error" });
   }
@@ -92,12 +114,41 @@ router.post("/login", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
+  res.set({
+    "Cache-Control": "no-store",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
+  const token = req.cookies.token;
+  if (!token)
+    return res.status(401).json({ success: false, message: "Access denied" });
+  const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+  if (decoded.role !== "admin" && decoded.role !== "owner")
+    return res.status(403).json({
+      success: false,
+      message: "Only Admins and Owners are allowed to see all users",
+    });
   const { error } = validateId(req.params.id);
   if (error) res.status(400).json({ message: error.details[0].message });
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (user) res.send(user);
-    else res.status(404).json({ success: false, message: "User Not Found" });
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User Not Found" });
+    if (user.role === "owner")
+      return res
+        .status(404)
+        .json({ success: false, message: "owner can't be deleted" });
+    if (user.role === "admin" && decoded.role === "admin")
+      return res
+        .status(404)
+        .json({ success: false, message: "Only owner can delete admins" });
+    await user.deleteOne();
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
