@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  description: { type: String, required: true, minlength: 10 },
+  description: { type: String, required: true, minlength: 10, maxlength: 30 },
   price: { type: Number, required: true, min: 0 },
   category: { type: String, required: true },
   stock: { type: Number, required: true, min: 0 },
@@ -20,7 +20,7 @@ export const Product = mongoose.model("Product", productSchema);
 export function validateNewProduct(product) {
   const schema = Joi.object({
     name: Joi.string().min(3).required(),
-    description: Joi.string().min(10).required(),
+    description: Joi.string().min(10).max(30).required(),
     price: Joi.number().min(0).required(),
     category: Joi.string().required(),
     stock: Joi.number().min(0).required(),
@@ -32,7 +32,7 @@ export function validateNewProduct(product) {
 export function validateProductUpdate(product) {
   const schema = Joi.object({
     name: Joi.string().min(3),
-    description: Joi.string().min(10),
+    description: Joi.string().min(10).max(30),
     price: Joi.number().min(0),
     category: Joi.string(),
     stock: Joi.number().min(0),
