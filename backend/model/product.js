@@ -25,6 +25,7 @@ export function validateNewProduct(product) {
     category: Joi.string().required(),
     stock: Joi.number().min(0).required(),
     images: Joi.array().items(Joi.string().uri()),
+    ownedBy: Joi.objectId(),
   });
   return schema.validate(product || {});
 }
