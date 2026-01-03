@@ -27,6 +27,22 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  res.set({
+    "Cache-Control": "no-store",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
+  const token = req.cookies.token;
+  if (!token)
+    return res.status(401).json({ success: false, message: "Access denied" });
+
+  const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+  if (decoded.role !== "admin" && decoded.role !== "owner")
+    return res.status(403).json({
+      success: false,
+      message: "Only Admins and Owners are allowed to post products",
+    });
+
   const { error } = validateNewProduct(req.body);
   if (error) res.status(400).json({ message: error.details[0].message });
 
