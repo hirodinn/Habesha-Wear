@@ -47,14 +47,17 @@ router.post("/", async (req, res) => {
 
   const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
 
-  const { error } = validateNewCart(req.body);
+  const obj = { ...req.body };
+  obj.userId = decoded._id;
+
+  const { error } = validateNewCart(obj);
   if (error)
     return res
       .status(400)
       .json({ success: false, message: error.details[0].message });
 
   try {
-    const cart = new Cart(req.body);
+    const cart = new Cart(obj);
     cart.save();
     res.send(cart);
   } catch (err) {
