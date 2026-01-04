@@ -29,5 +29,5 @@ export function validateNewCart(cart) {
       )
       .required(),
   });
-  return schema.validate(order || {});
+  return schema.validate(cart || {});
 }
