@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { PreProduct } from "../model/preProduct.js";
+import { PreProduct, validateNewPreProduct } from "../model/preProduct.js";
 
 const router = express.Router();
 
@@ -25,6 +25,43 @@ router.get("/", async (req, res) => {
       res.send(preProducts);
     } else {
       res.status(400).json({ success: false, message: "User is not verified" });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.post("/", async (req, res) => {
+  res.set({
+    "Cache-Control": "no-store",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
+
+  const token = req.cookies.token;
+  if (!token)
+    return res.status(401).json({ success: false, message: "Access Denied" });
+
+  const obj = { ...req.body };
+  const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+  obj.ownedBy = decoded._id;
+  console.log(obj);
+
+  const { error } = validateNewPreProduct(obj);
+  if (error)
+    return res
+      .status(400)
+      .json({ success: false, message: error.details[0].message });
+
+  try {
+    if (decoded.role === "vendor") {
+      const preProduct = new PreProduct(obj);
+      await preProduct.save();
+      res.send(preProduct);
+    } else {
+      res
+        .status(400)
+        .json({ success: false, message: "user not allowed to post products" });
     }
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

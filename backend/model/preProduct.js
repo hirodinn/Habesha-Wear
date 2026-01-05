@@ -18,7 +18,7 @@ const preProductSchema = new mongoose.Schema({
 
 export const PreProduct = mongoose.model("PreProduct", preProductSchema);
 
-export function validatePreProduct(preProduct) {
+export function validateNewPreProduct(preProduct) {
   const schema = Joi.object({
     ownedBy: Joi.objectId().required(),
     name: Joi.string().min(3).required(),
@@ -31,9 +31,11 @@ export function validatePreProduct(preProduct) {
       .valid("pending", "accepted", "rejected")
       .default("pending"),
   });
+  return schema.validate(preProduct || {});
 }
 export function validatePreProductUpdate(preProduct) {
   const schema = Joi.object({
     status: Joi.string().valid("pending", "accepted", "rejected").required(),
   });
+  return schema.validate(preProduct || {});
 }
