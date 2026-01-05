@@ -9,9 +9,9 @@ import preProducts from "../routes/preProducts.js";
 export default function (app) {
   app.use(express.json());
   app.use(cookieParser());
-  app.use("/users", users);
-  app.use("/products", products);
-  app.use("/orders", orders);
-  app.use("/carts", carts);
-  app.use("/preproducts", preProducts);
+  app.use("/api/users", users);
+  app.use("/api/products", products);
+  app.use("/api/orders", orders);
+  app.use("/api/carts", carts);
+  app.use("/api/preproducts", preProducts);
 }

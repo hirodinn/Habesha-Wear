@@ -115,4 +115,35 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  res.set({
+    "Cache-Control": "no-store",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
+  const token = req.cookies.token;
+  if (!token)
+    return res.status(401).json({ success: false, message: "Access Denied" });
+
+  const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+  if (decoded.role !== "owner" && decoded.role !== "admin")
+    return res
+      .status(403)
+      .json({
+        success: false,
+        message: "Only Admins/Owners can delete requests",
+      });
+
+  try {
+    const preProduct = await PreProduct.findByIdAndDelete(req.params.id);
+    if (!preProduct)
+      return res
+        .status(404)
+        .json({ success: false, message: "Request not found" });
+    res.send(preProduct);
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 export default router;

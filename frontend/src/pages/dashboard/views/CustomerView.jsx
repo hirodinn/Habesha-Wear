@@ -1,0 +1,173 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Search,
+  ShoppingCart,
+  Filter,
+  Tag,
+  Star,
+  ShoppingBag,
+} from "lucide-react";
+
+const CustomerView = () => {
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("/api/products");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredProducts = products.filter((p) => {
+    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = category === "all" || p.category === category;
+    return matchesSearch && matchesCategory;
+  });
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+      {/* Header & Filter */}
+      <div className="flex flex-col md:flex-row gap-6 items-center justify-between card-standard p-6 bg-[var(--bg-card)]/80 backdrop-blur-md">
+        <div>
+          <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">
+            Shop Collection
+          </h1>
+          <p className="text-[var(--text-secondary)] text-sm">
+            Discover unique Habesha fashion artifacts
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <div className="relative group min-w-[280px]">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500 transition-colors w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="w-full bg-[var(--input-bg)] border border-[var(--border-color)] rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all text-[var(--text-main)] placeholder-gray-400"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="relative min-w-[180px]">
+            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full bg-[var(--input-bg)] border border-[var(--border-color)] rounded-xl pl-10 pr-8 py-3 appearance-none text-[var(--text-main)] focus:outline-none focus:border-purple-500/50 cursor-pointer"
+            >
+              <option value="all">All Categories</option>
+              <option value="clothing">Clothing</option>
+              <option value="footwear">Footwear</option>
+              <option value="accessories">Accessories</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Product Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {filteredProducts.map((product) => (
+          <div
+            key={product._id}
+            className="card-standard group overflow-hidden flex flex-col h-full hover:shadow-lg dark:hover:shadow-purple-900/10"
+          >
+            {/* Image Container */}
+            <div className="aspect-[4/5] bg-gray-100 dark:bg-gray-900 relative overflow-hidden">
+              {product.images && product.images[0] ? (
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-[var(--text-secondary)] gap-2">
+                  <ShoppingBag size={48} className="opacity-20" />
+                  <span className="text-sm font-medium opacity-50">
+                    No Image
+                  </span>
+                </div>
+              )}
+
+              {/* Floating Tags */}
+              <div className="absolute top-4 left-4 flex gap-2">
+                <span className="bg-white/80 dark:bg-black/80 backdrop-blur-md text-xs font-bold px-3 py-1 rounded-full text-[var(--text-main)] shadow-sm border border-white/20 uppercase tracking-wider flex items-center gap-1">
+                  <Tag size={10} /> {product.category || "Item"}
+                </span>
+              </div>
+
+              {/* Quick Action Button */}
+              <button className="absolute bottom-4 right-4 bg-white text-black p-3 rounded-full shadow-lg translate-y-20 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-purple-600 hover:text-white hover:scale-110 active:scale-95">
+                <ShoppingCart size={20} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-5 flex flex-col flex-1 bg-[var(--bg-card)]">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-display font-bold text-lg leading-tight truncate pr-2 text-[var(--text-main)]">
+                  {product.name}
+                </h3>
+                <div className="flex items-center gap-1 text-yellow-500 text-xs">
+                  <Star size={12} fill="currentColor" />
+                  <span>4.8</span>
+                </div>
+              </div>
+
+              <p className="text-[var(--text-secondary)] text-sm line-clamp-2 mb-4 flex-1">
+                {product.description || "No description available."}
+              </p>
+
+              <div className="pt-4 border-t border-[var(--border-color)] flex justify-between items-center mt-auto">
+                <span className="text-xl font-bold text-[var(--text-main)]">
+                  {product.price} Birr
+                </span>
+                <span
+                  className={`text-xs font-bold px-2 py-1 rounded-md ${
+                    product.stock > 0
+                      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                      : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                  }`}
+                >
+                  {product.stock > 0 ? `${product.stock} In Stock` : "Sold Out"}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {filteredProducts.length === 0 && !loading && (
+        <div className="text-center py-24 card-standard mx-auto max-w-2xl bg-[var(--bg-card)]">
+          <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-[var(--text-secondary)] opacity-50" />
+          <h3 className="text-xl font-bold text-[var(--text-main)] mb-2">
+            No products found
+          </h3>
+          <p className="text-[var(--text-secondary)]">
+            Try adjusting your filters or search terms.
+          </p>
+        </div>
+      )}
+      {loading && (
+        <div className="flex justify-center py-20">
+          <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CustomerView;
