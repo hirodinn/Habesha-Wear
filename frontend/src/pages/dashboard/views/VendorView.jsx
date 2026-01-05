@@ -1,0 +1,278 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Plus,
+  Package,
+  Clock,
+  CheckCircle,
+  XCircle,
+  ChevronRight,
+  X,
+  Loader2,
+} from "lucide-react";
+
+const VendorView = () => {
+  const [preProducts, setPreProducts] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category: "",
+    stock: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+
+  useEffect(() => {
+    fetchPreProducts();
+  }, []);
+
+  const fetchPreProducts = async () => {
+    try {
+      const response = await axios.get("/api/preproducts");
+      setPreProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching pre-products:", error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+    try {
+      await axios.post("/api/preproducts", newProduct);
+      setMessage({ type: "success", text: "Product submitted for approval!" });
+      setShowForm(false);
+      setNewProduct({
+        name: "",
+        description: "",
+        price: "",
+        category: "",
+        stock: "",
+      });
+      fetchPreProducts();
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: error.response?.data?.message || "Submission failed",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-8 animate-fade-in relative">
+      <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 border-b border-[var(--border-color)] pb-6">
+        <div>
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-sky-400 to-blue-600 mb-1">
+            Vendor Portal
+          </h1>
+          <p className="text-[var(--text-secondary)] text-sm">
+            Manage your inventory and submissions
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="btn-primary flex items-center gap-2"
+        >
+          {showForm ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+          <span>{showForm ? "Cancel Submission" : "New Submisson"}</span>
+        </button>
+      </div>
+
+      {message && (
+        <div
+          className={`p-4 rounded-xl border flex items-center gap-3 animate-slide-up ${
+            message.type === "success"
+              ? "bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-300"
+              : "bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-300"
+          }`}
+        >
+          {message.type === "success" ? (
+            <CheckCircle size={20} />
+          ) : (
+            <XCircle size={20} />
+          )}
+          {message.text}
+        </div>
+      )}
+
+      {showForm && (
+        <div className="card-standard p-6 md:p-8 animate-fade-in shadow-xl">
+          <h2 className="text-xl font-semibold mb-6 flex items-center gap-2 text-[var(--text-main)]">
+            <Package className="text-sky-500" />
+            Product Details
+          </h2>
+
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-sm font-medium text-[var(--text-secondary)]">
+                Product Name
+              </label>
+              <input
+                required
+                className="input-field"
+                placeholder="e.g. Traditional Dress"
+                value={newProduct.name}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, name: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-sm font-medium text-[var(--text-secondary)]">
+                Description
+              </label>
+              <textarea
+                required
+                rows={4}
+                className="input-field resize-none"
+                placeholder="Describe materials, sizing, etc."
+                value={newProduct.description}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, description: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[var(--text-secondary)]">
+                Price (Birr)
+              </label>
+              <input
+                type="number"
+                required
+                className="input-field"
+                placeholder="0.00"
+                value={newProduct.price}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, price: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[var(--text-secondary)]">
+                Stock Quantity
+              </label>
+              <input
+                type="number"
+                required
+                className="input-field"
+                placeholder="0"
+                value={newProduct.stock}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, stock: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-sm font-medium text-[var(--text-secondary)]">
+                Category
+              </label>
+              <select
+                required
+                className="input-field appearance-none"
+                value={newProduct.category}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, category: e.target.value })
+                }
+              >
+                <option value="" disabled>
+                  Select Category
+                </option>
+                <option value="clothing">Clothing</option>
+                <option value="footwear">Footwear</option>
+                <option value="accessories">Accessories</option>
+                <option value="traditional">Traditional</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-2 pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-primary w-full flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="animate-spin w-5 h-5" />
+                ) : (
+                  "Submit for Review"
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Product List */}
+      <h3 className="text-lg font-semibold text-[var(--text-secondary)] mt-8 mb-4">
+        Submission History
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {preProducts.map((product) => (
+          <div
+            key={product._id}
+            className="card-standard p-5 relative group bg-[var(--bg-card)]"
+          >
+            <div className="absolute top-4 right-4">
+              <span className="text-xs px-2.5 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/10 text-yellow-600 dark:text-yellow-500 border border-yellow-200 dark:border-yellow-500/20 flex items-center gap-1.5 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse" />
+                Pending Review
+              </span>
+            </div>
+
+            <div className="mb-4 pt-2">
+              <h3 className="font-bold text-lg text-[var(--text-main)] mb-1">
+                {product.name}
+              </h3>
+              <p className="text-[var(--text-secondary)] text-sm line-clamp-2 min-h-[40px]">
+                {product.description}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="px-2 py-1 bg-[var(--bg-main)] rounded-md text-xs text-[var(--text-secondary)] border border-[var(--border-color)]">
+                {product.category}
+              </span>
+              <span className="px-2 py-1 bg-[var(--bg-main)] rounded-md text-xs text-[var(--text-secondary)] border border-[var(--border-color)]">
+                Stock: {product.stock}
+              </span>
+            </div>
+
+            <div className="pt-4 border-t border-[var(--border-color)] flex justify-between items-center">
+              <span className="text-[var(--text-main)] font-bold">
+                {product.price} Birr
+              </span>
+              <button className="text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          </div>
+        ))}
+        {preProducts.length === 0 && !loading && (
+          <div className="col-span-full py-16 text-center border-2 border-dashed border-[var(--border-color)] rounded-3xl bg-[var(--bg-card)]">
+            <Package className="w-12 h-12 mx-auto mb-3 text-[var(--text-secondary)] opacity-50" />
+            <p className="text-[var(--text-main)] font-medium">
+              No products submitted yet.
+            </p>
+            <p className="text-[var(--text-secondary)] text-sm">
+              Use the form above to add your first item.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default VendorView;

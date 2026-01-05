@@ -23,7 +23,7 @@ router.get("/:id", async (req, res) => {
   if (error) res.status(400).json({ message: error.details[0].message });
 
   try {
-    const product = await product.findOne({ _id: req.params.id });
+    const product = await Product.findOne({ _id: req.params.id });
     if (product) res.send(product);
     else res.status(404).json({ success: false, message: "Product Not Found" });
   } catch (err) {

@@ -15,6 +15,10 @@ const orderSchema = new mongoose.Schema({
   ],
   totalAmount: { type: Number, required: true, min: 0 },
   orderDate: { type: Date, default: Date.now },
+  deliveredDate: {
+    type: Date,
+    default: new Date(new Date().setDate(new Date().getDate() + 4)),
+  },
   status: {
     type: String,
     enum: ["pending", "shipped", "delivered", "cancelled"],
@@ -26,16 +30,17 @@ export const Order = mongoose.model("Order", orderSchema);
 
 export function validateNewOrder(order) {
   const schema = Joi.object({
-    userId: Joi.string().required(),
+    userId: Joi.objectId().required(),
     products: Joi.array()
       .items(
         Joi.object({
-          productId: Joi.string().required(),
+          productId: Joi.objectId().required(),
           quantity: Joi.number().min(1).required(),
         })
       )
       .required(),
     totalAmount: Joi.number().min(0).required(),
+    deliveredDate: Joi.date(),
     status: Joi.string()
       .valid("pending", "shipped", "delivered", "cancelled")
       .default("pending"),
@@ -45,14 +50,6 @@ export function validateNewOrder(order) {
 
 export function validateOrderUpdate(order) {
   const schema = Joi.object({
-    userId: Joi.string(),
-    products: Joi.array().items(
-      Joi.object({
-        productId: Joi.string(),
-        quantity: Joi.number().min(1),
-      })
-    ),
-    totalAmount: Joi.number().min(0),
     status: Joi.string().valid("pending", "shipped", "delivered", "cancelled"),
   });
   return schema.validate(order || {});

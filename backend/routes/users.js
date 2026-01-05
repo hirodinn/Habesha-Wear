@@ -67,8 +67,8 @@ router.post("/", async (req, res) => {
     user = await user.save();
     res.cookie("token", user.getAuthToken(), {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       path: "/",
       maxAge: 24 * 60 * 60 * 1000,
     });
@@ -95,8 +95,8 @@ router.post("/login", async (req, res) => {
     if (isValid) {
       res.cookie("token", token, {
         httpOnly: true,
-        secure: true,
-        sameSite: "None",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
         path: "/",
         maxAge: 24 * 60 * 60 * 1000,
       });
@@ -111,6 +111,11 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: "Server error" });
   }
+});
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 
 router.delete("/:id", async (req, res) => {
