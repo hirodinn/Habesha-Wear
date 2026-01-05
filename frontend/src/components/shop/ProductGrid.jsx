@@ -9,6 +9,9 @@ import {
   ShoppingBag,
   Loader2,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { addItemToCart } from "../../redux/cartSlice";
 
 const ProductGrid = ({ isPublic = false }) => {
   const dispatch = useDispatch();
@@ -83,7 +86,7 @@ const ProductGrid = ({ isPublic = false }) => {
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full bg-[var(--input-bg)] border border-[var(--border-color)] rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all text-[var(--text-main)] placeholder-gray-400"
+              className="w-full bg-[var(--input-bg)] border border-[var(--border-color)] rounded-xl pl-12 pr-4 py-2.5 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all text-[var(--text-main)] placeholder-gray-400"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -94,7 +97,7 @@ const ProductGrid = ({ isPublic = false }) => {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-[var(--input-bg)] border border-[var(--border-color)] rounded-xl pl-10 pr-8 py-3 appearance-none text-[var(--text-main)] focus:outline-none focus:border-sky-500/50 cursor-pointer"
+              className="w-full bg-[var(--input-bg)] border border-[var(--border-color)] rounded-xl pl-10 pr-8 py-2.5 appearance-none text-[var(--text-main)] focus:outline-none focus:border-sky-500/50 cursor-pointer"
             >
               <option value="all">All Categories</option>
               <option value="clothing">Clothing</option>

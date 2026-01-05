@@ -4,6 +4,7 @@ import { loginUser, registerUser, logoutUser, loadUser } from "./userAction";
 const initialState = {
   user: null,
   darkMode: false,
+  isSidebarCollapsed: false,
   loading: false,
   error: null,
 };
@@ -12,6 +13,9 @@ export const userReducer = createReducer(initialState, (builder) => {
   builder
     .addCase("TOGGLE_DARK_MODE", (state) => {
       state.darkMode = !state.darkMode;
+    })
+    .addCase("TOGGLE_SIDEBAR", (state) => {
+      state.isSidebarCollapsed = !state.isSidebarCollapsed;
     })
     // Login
     .addCase(loginUser.pending, (state) => {

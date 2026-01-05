@@ -1,6 +1,10 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logoutUser, toggleDarkMode } from "../../redux/userAction";
+import {
+  logoutUser,
+  toggleDarkMode,
+  toggleSidebar,
+} from "../../redux/userAction";
 import {
   User as UserIcon,
   LogOut,
@@ -15,15 +19,16 @@ import {
   ChevronRight,
   Home,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 const Sidebar = () => {
-  const { user, darkMode } = useSelector((state) => state.auth);
+  const {
+    user,
+    darkMode,
+    isSidebarCollapsed: isCollapsed,
+  } = useSelector((state) => state.auth);
   const { items: cartItems } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -70,7 +75,7 @@ const Sidebar = () => {
     <>
       {/* DESKTOP SIDEBAR */}
       <aside
-        className={`hidden md:flex flex-col h-screen sticky top-0 border-r border-[var(--border-color)] bg-[var(--bg-card)]/80 backdrop-blur-xl transition-all duration-500 ease-in-out z-50 ${
+        className={`hidden md:flex flex-col h-screen fixed left-0 top-0 border-r border-[var(--border-color)] bg-[var(--bg-card)]/80 backdrop-blur-xl transition-all duration-500 ease-in-out z-50 ${
           isCollapsed ? "w-20" : "w-72"
         }`}
       >
@@ -175,7 +180,7 @@ const Sidebar = () => {
 
           {/* Collapse Button */}
           <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={() => dispatch(toggleSidebar())}
             className="hidden md:flex absolute -right-4 top-24 w-8 h-8 rounded-full bg-[var(--bg-card)] border border-[var(--border-color)] items-center justify-center text-[var(--text-secondary)] hover:text-sky-500 shadow-sm transition-all hover:scale-110 active:scale-90"
           >
             {isCollapsed ? (
