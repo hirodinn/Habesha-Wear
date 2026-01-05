@@ -13,7 +13,11 @@ const preProductSchema = new mongoose.Schema({
   category: { type: String, required: true },
   stock: { type: Number, required: true, min: 0 },
   images: { type: [String], default: [] },
-  status: { type: String, enum: ["pending, accepted, rejected"] },
+  status: {
+    type: String,
+    enum: ["pending", "accepted", "rejected"],
+    default: "pending",
+  },
 });
 
 export const PreProduct = mongoose.model("PreProduct", preProductSchema);

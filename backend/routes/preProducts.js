@@ -1,6 +1,11 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { PreProduct, validateNewPreProduct } from "../model/preProduct.js";
+import {
+  PreProduct,
+  validateNewPreProduct,
+  validatePreProductUpdate,
+} from "../model/preProduct.js";
+import { validateId } from "../utils/validateId.js";
 
 const router = express.Router();
 
@@ -62,6 +67,48 @@ router.post("/", async (req, res) => {
       res
         .status(400)
         .json({ success: false, message: "user not allowed to post products" });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.put("/:id", async (req, res) => {
+  res.set({
+    "Cache-Control": "no-store",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
+  const token = req.cookies.token;
+  if (!token)
+    return res.status(401).json({ success: false, message: "Access Denied" });
+
+  var { error } = validateId(req.params.id);
+  if (error)
+    return res
+      .status(400)
+      .json({ success: false, message: error.details[0].message });
+
+  var { error } = validatePreProductUpdate(req.body);
+  if (error)
+    return res
+      .status(400)
+      .json({ success: false, message: error.details[0].message });
+
+  const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+
+  try {
+    if (decoded.role === "owner" || decoded.role === "admin") {
+      const preProduct = await PreProduct.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+      res.send(preProduct);
+    } else {
+      res
+        .status(400)
+        .json({ success: false, message: "User can't modify products" });
     }
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
