@@ -55,7 +55,7 @@ const Cart = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 py-4 animate-fade-in">
+    <div className="w-full space-y-8 py-4 animate-fade-in">
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate(-1)}
@@ -80,9 +80,9 @@ const Cart = () => {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Items List */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-3 space-y-4">
             {cartItems.map((item) => (
               <div
                 key={item.productId}
