@@ -22,12 +22,12 @@ router.get("/", async (req, res) => {
   const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
 
   try {
-    const orders = await Order.find();
     if (decoded.role === "admin" || decoded.role === "owner") {
+      const orders = await Order.find();
       res.send(orders);
     } else if (decoded.role === "customer") {
-      const temp = orders.filter((order) => order.userId === decoded._id);
-      res.send(temp);
+      const orders = await Order.find({ userId: decoded._id });
+      res.send(orders);
     }
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

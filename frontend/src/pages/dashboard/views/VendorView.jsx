@@ -67,7 +67,7 @@ const VendorView = () => {
     <div className="space-y-8 animate-fade-in relative">
       <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 border-b border-[var(--border-color)] pb-6">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-orange-400 to-red-600 mb-1">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-sky-400 to-blue-600 mb-1">
             Vendor Portal
           </h1>
           <p className="text-[var(--text-secondary)] text-sm">
@@ -104,7 +104,7 @@ const VendorView = () => {
       {showForm && (
         <div className="card-standard p-6 md:p-8 animate-fade-in shadow-xl">
           <h2 className="text-xl font-semibold mb-6 flex items-center gap-2 text-[var(--text-main)]">
-            <Package className="text-purple-500" />
+            <Package className="text-sky-500" />
             Product Details
           </h2>
 

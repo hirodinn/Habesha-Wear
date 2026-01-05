@@ -5,7 +5,7 @@ import VendorView from "./views/VendorView";
 import AdminView from "./views/AdminView";
 
 const Dashboard = () => {
-  const { user } = useSelector((state) => state);
+  const { user } = useSelector((state) => state.auth);
 
   if (!user) {
     return (

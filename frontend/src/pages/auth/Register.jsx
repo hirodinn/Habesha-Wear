@@ -13,7 +13,7 @@ const Register = () => {
   });
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, user } = useSelector((state) => state);
+  const { loading, error, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (user) {
@@ -45,12 +45,12 @@ const Register = () => {
   return (
     <div className="min-h-[80vh] flex items-center justify-center relative">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/5 dark:bg-purple-500/20 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-pink-500/5 dark:bg-pink-500/20 rounded-full blur-[100px]" />
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-sky-500/5 dark:bg-sky-500/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-500/5 dark:bg-blue-500/20 rounded-full blur-[100px]" />
       </div>
 
       <div className="w-full max-w-lg relative z-10 animate-fade-in">
-        <div className="card-standard p-8 md:p-10 shadow-2xl shadow-purple-500/5">
+        <div className="card-standard p-8 md:p-10 shadow-2xl shadow-sky-500/5">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-2 text-[var(--text-main)]">
               Create Account
@@ -108,15 +108,15 @@ const Register = () => {
                   onClick={() => setFormData({ ...formData, role: "customer" })}
                   className={`relative p-4 rounded-2xl border text-left transition-all duration-300 group ${
                     formData.role === "customer"
-                      ? "bg-purple-50 dark:bg-purple-500/20 border-purple-500/50 ring-1 ring-purple-500/50"
-                      : "bg-[var(--input-bg)] border-[var(--border-color)] hover:border-purple-300 dark:hover:border-purple-700"
+                      ? "bg-sky-50 dark:bg-sky-500/20 border-sky-500/50 ring-1 ring-sky-500/50"
+                      : "bg-[var(--input-bg)] border-[var(--border-color)] hover:border-sky-300 dark:hover:border-sky-700"
                   }`}
                 >
                   <div
                     className={`p-2 rounded-lg w-fit mb-3 transition-colors ${
                       formData.role === "customer"
-                        ? "bg-purple-500 text-white"
-                        : "bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 group-hover:bg-purple-100 dark:group-hover:bg-purple-500/20 group-hover:text-purple-600 dark:group-hover:text-purple-300"
+                        ? "bg-sky-500 text-white"
+                        : "bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 group-hover:bg-sky-100 dark:group-hover:bg-sky-500/20 group-hover:text-sky-600 dark:group-hover:text-sky-300"
                     }`}
                   >
                     <ShoppingBag size={20} />

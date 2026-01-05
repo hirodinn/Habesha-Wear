@@ -75,11 +75,11 @@ const AdminView = () => {
   return (
     <div className="space-y-10 animate-fade-in pb-12">
       <div className="flex items-center gap-4">
-        <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-2xl border border-purple-200 dark:border-purple-500/30">
-          <Shield className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+        <div className="p-3 bg-sky-100 dark:bg-sky-900/20 rounded-2xl border border-sky-200 dark:border-sky-500/30">
+          <Shield className="w-8 h-8 text-sky-600 dark:text-sky-400" />
         </div>
         <div>
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-purple-600 via-pink-600 to-indigo-600 dark:from-purple-400 dark:via-pink-400 dark:to-indigo-400">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-sky-600 via-blue-600 to-indigo-600 dark:from-sky-400 dark:via-blue-400 dark:to-indigo-400">
             Command Center
           </h1>
           <p className="text-[var(--text-secondary)]">
@@ -122,10 +122,10 @@ const AdminView = () => {
         </div>
 
         <div className="card-standard p-6 relative overflow-hidden group bg-[var(--bg-card)]">
-          <div className="absolute right-0 top-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl group-hover:bg-purple-500/10 transition-all" />
+          <div className="absolute right-0 top-0 w-32 h-32 bg-sky-500/5 rounded-full blur-3xl group-hover:bg-sky-500/10 transition-all" />
           <div className="flex justify-between items-start mb-4">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-              <Users className="text-purple-600 dark:text-purple-400 w-5 h-5" />
+            <div className="p-2 bg-sky-100 dark:bg-sky-900/20 rounded-lg">
+              <Users className="text-sky-600 dark:text-sky-400 w-5 h-5" />
             </div>
           </div>
           <p className="text-[var(--text-secondary)] text-sm">Total Vendors</p>
@@ -137,8 +137,8 @@ const AdminView = () => {
         <div className="card-standard p-6 relative overflow-hidden group bg-[var(--bg-card)]">
           <div className="absolute right-0 top-0 w-32 h-32 bg-pink-500/5 rounded-full blur-3xl group-hover:bg-pink-500/10 transition-all" />
           <div className="flex justify-between items-start mb-4">
-            <div className="p-2 bg-pink-100 dark:bg-pink-900/20 rounded-lg">
-              <Shield className="text-pink-600 dark:text-pink-400 w-5 h-5" />
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+              <Shield className="text-blue-600 dark:text-blue-400 w-5 h-5" />
             </div>
           </div>
           <p className="text-[var(--text-secondary)] text-sm">
@@ -153,7 +153,7 @@ const AdminView = () => {
       {/* Approval Section */}
       <div className="space-y-6">
         <h2 className="text-xl font-semibold flex items-center gap-3 text-[var(--text-main)]">
-          <span className="w-2 h-8 bg-purple-500 rounded-full" />
+          <span className="w-2 h-8 bg-sky-500 rounded-full" />
           Validation Queue
         </h2>
 
@@ -161,7 +161,7 @@ const AdminView = () => {
           {pendingProducts.map((product) => (
             <div
               key={product._id}
-              className="card-standard p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hover:border-purple-500/30 bg-[var(--bg-card)]"
+              className="card-standard p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hover:border-sky-500/30 bg-[var(--bg-card)]"
             >
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">

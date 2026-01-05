@@ -8,7 +8,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, user } = useSelector((state) => state);
+  const { loading, error, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (user) {
@@ -25,11 +25,11 @@ const Login = () => {
     <div className="min-h-[70vh] flex items-center justify-center relative">
       {/* Decorative Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-[120px]" />
+        <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-sky-500/5 dark:bg-sky-500/10 rounded-full blur-[120px]" />
       </div>
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
-        <div className="card-standard p-8 md:p-10 shadow-2xl shadow-purple-500/5">
+        <div className="card-standard p-8 md:p-10 shadow-2xl shadow-sky-500/5">
           <div className="mb-8">
             <h2 className="text-3xl font-bold mb-2 text-[var(--text-main)]">
               Welcome Back
@@ -70,7 +70,7 @@ const Login = () => {
                 </label>
                 <a
                   href="#"
-                  className="text-xs text-purple-600 dark:text-purple-400 hover:underline"
+                  className="text-xs text-sky-600 dark:text-sky-400 hover:underline"
                 >
                   Forgot?
                 </a>
@@ -108,7 +108,7 @@ const Login = () => {
               New to Habesha Wear?{" "}
               <Link
                 to="/register"
-                className="text-[var(--text-main)] font-medium hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                className="text-[var(--text-main)] font-medium hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
               >
                 Create an account
               </Link>

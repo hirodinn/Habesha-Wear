@@ -116,7 +116,10 @@ router.put("/", async (req, res) => {
   const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
   try {
     if (decoded.role === "customer") {
-      const cart = await Cart.find({ userId: decoded._id });
+      let cart = await Cart.findOne({ userId: decoded._id });
+      if (!cart) {
+        cart = new Cart({ userId: decoded._id, products: [] });
+      }
       cart.products = req.body.products;
       await cart.save();
       res.send(cart);

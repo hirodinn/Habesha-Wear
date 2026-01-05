@@ -7,17 +7,42 @@ import {
   Tag,
   Star,
   ShoppingBag,
+  Loader2,
 } from "lucide-react";
 
-const CustomerView = () => {
+const ProductGrid = ({ isPublic = false }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [loading, setLoading] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(null);
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  const handleAddToCart = async (product) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    setAddingToCart(product._id);
+    try {
+      await dispatch(
+        addItemToCart({ productId: product._id, quantity: 1 })
+      ).unwrap();
+      // Optionally show a toast/notification here
+    } catch (err) {
+      console.error("Failed to add to cart:", err);
+    } finally {
+      setAddingToCart(null);
+    }
+  };
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -39,14 +64,16 @@ const CustomerView = () => {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Header & Filter */}
+      {/* Search & Filter */}
       <div className="flex flex-col md:flex-row gap-6 items-center justify-between card-standard p-6 bg-[var(--bg-card)]/80 backdrop-blur-md">
         <div>
-          <h1 className="text-3xl font-bold text-[var(--text-main)] mb-2">
-            Shop Collection
-          </h1>
+          <h2 className="text-2xl font-bold text-[var(--text-main)] mb-1">
+            {isPublic ? "Latest Collection" : "Shop Collection"}
+          </h2>
           <p className="text-[var(--text-secondary)] text-sm">
-            Discover unique Habesha fashion artifacts
+            {isPublic
+              ? "Browse our unique cultural artifacts"
+              : "Discover unique Habesha fashion artifacts"}
           </p>
         </div>
 
@@ -78,14 +105,13 @@ const CustomerView = () => {
         </div>
       </div>
 
-      {/* Product Grid */}
+      {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredProducts.map((product) => (
           <div
             key={product._id}
-            className="card-standard group overflow-hidden flex flex-col h-full hover:shadow-lg dark:hover:shadow-sky-900/10"
+            className="card-standard group overflow-hidden flex flex-col h-full hover:shadow-lg dark:hover:shadow-purple-900/10"
           >
-            {/* Image Container */}
             <div className="aspect-[4/5] bg-gray-100 dark:bg-gray-900 relative overflow-hidden">
               {product.images && product.images[0] ? (
                 <img
@@ -102,20 +128,25 @@ const CustomerView = () => {
                 </div>
               )}
 
-              {/* Floating Tags */}
               <div className="absolute top-4 left-4 flex gap-2">
                 <span className="bg-white/80 dark:bg-black/80 backdrop-blur-md text-xs font-bold px-3 py-1 rounded-full text-[var(--text-main)] shadow-sm border border-white/20 uppercase tracking-wider flex items-center gap-1">
                   <Tag size={10} /> {product.category || "Item"}
                 </span>
               </div>
 
-              {/* Quick Action Button */}
-              <button className="absolute bottom-4 right-4 bg-white text-black p-3 rounded-full shadow-lg translate-y-20 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-sky-600 hover:text-white hover:scale-110 active:scale-95">
-                <ShoppingCart size={20} />
+              <button
+                onClick={() => handleAddToCart(product)}
+                disabled={addingToCart === product._id || product.stock <= 0}
+                className="absolute bottom-4 right-4 bg-white text-black p-3 rounded-full shadow-lg translate-y-20 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-sky-600 hover:text-white hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {addingToCart === product._id ? (
+                  <Loader2 size={20} className="animate-spin" />
+                ) : (
+                  <ShoppingCart size={20} />
+                )}
               </button>
             </div>
 
-            {/* Content */}
             <div className="p-5 flex flex-col flex-1 bg-[var(--bg-card)]">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-display font-bold text-lg leading-tight truncate pr-2 text-[var(--text-main)]">
@@ -157,17 +188,18 @@ const CustomerView = () => {
             No products found
           </h3>
           <p className="text-[var(--text-secondary)]">
-            Try adjusting your filters or search terms.
+            Try adjusting your filters.
           </p>
         </div>
       )}
+
       {loading && (
         <div className="flex justify-center py-20">
-          <div className="w-10 h-10 border-4 border-sky-500 border-t-transparent rounded-full animate-spin" />
+          <Loader2 className="w-10 h-10 text-sky-500 animate-spin" />
         </div>
       )}
     </div>
   );
 };
 
-export default CustomerView;
+export default ProductGrid;
