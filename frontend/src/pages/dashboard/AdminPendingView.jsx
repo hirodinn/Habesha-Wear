@@ -53,7 +53,7 @@ const AdminPendingView = () => {
       return;
     setLoading(true);
     try {
-      await axios.delete(`/api/preproducts/${id}`);
+      await axios.put(`/api/preproducts/${id}`, { status: "rejected" });
       setActionMessage({
         type: "success",
         text: "Product request rejected/deleted.",
