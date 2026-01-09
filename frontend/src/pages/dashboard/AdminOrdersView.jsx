@@ -33,7 +33,7 @@ const AdminOrdersView = () => {
   const handleUpdateStatus = async (orderId, newStatus) => {
     setLoading(true);
     try {
-      await axios.put(`/api/orders/${orderId}`, { state: newStatus });
+      await axios.put(`/api/orders/${orderId}`, { status: newStatus });
       setActionMessage({
         type: "success",
         text: `Order status updated to ${newStatus}.`,
@@ -158,26 +158,26 @@ const AdminOrdersView = () => {
                   <td className="px-6 py-4">
                     <span
                       className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${getStatusColor(
-                        order.state
+                        order.status
                       )}`}
                     >
-                      {order.state || "Pending"}
+                      {order.status || "Pending"}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <select
                         className="bg-(--input-bg) border border-(--border-color) rounded-lg text-xs p-1 focus:outline-none focus:border-sky-500 cursor-pointer text-(--text-main)"
-                        value={order.state || "Pending"}
+                        value={order.status || "pending"}
                         onChange={(e) =>
                           handleUpdateStatus(order._id, e.target.value)
                         }
                         disabled={loading}
                       >
-                        <option value="Pending">Pending</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
+                        <option value="pending">Pending</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
                       </select>
                     </div>
                   </td>
