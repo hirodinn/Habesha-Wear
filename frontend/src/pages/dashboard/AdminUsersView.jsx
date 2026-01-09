@@ -108,72 +108,93 @@ const AdminUsersView = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredUsers.map((user) => (
-          <div
-            key={user._id}
-            className="card-standard p-6 flex flex-col justify-between group hover:border-sky-500/30 bg-(--bg-card)"
-          >
-            <div className="space-y-4">
-              <div className="flex justify-between items-start">
-                <div className="p-3 rounded-2xl bg-(--bg-main) border border-(--border-color)">
-                  {user.role === "admin" || user.role === "owner" ? (
-                    <Shield className="w-6 h-6 text-sky-500" />
-                  ) : (
-                    <User className="w-6 h-6 text-gray-400" />
-                  )}
-                </div>
-                <span
-                  className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
-                    user.role === "owner"
-                      ? "bg-purple-100 text-purple-700 border-purple-200"
-                      : user.role === "admin"
-                      ? "bg-sky-100 text-sky-700 border-sky-200"
-                      : user.role === "vendor"
-                      ? "bg-amber-100 text-amber-700 border-amber-200"
-                      : "bg-gray-100 text-gray-700 border-gray-200"
-                  }`}
+      <div className="card-standard overflow-hidden bg-(--bg-card)">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-(--bg-main) text-(--text-secondary) text-xs uppercase tracking-wider">
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
+                  User
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
+                  Email
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
+                  Role
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color) text-right">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-(--border-color)">
+              {filteredUsers.map((user) => (
+                <tr
+                  key={user._id}
+                  className="group hover:bg-sky-500/5 transition-colors"
                 >
-                  {user.role}
-                </span>
-              </div>
-
-              <div>
-                <h3 className="font-bold text-lg text-(--text-main) truncate">
-                  {user.name}
-                </h3>
-                <div className="flex items-center gap-2 text-(--text-secondary) text-sm mt-1">
-                  <Mail size={14} />
-                  <span className="truncate">{user.email}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 pt-4 border-t border-(--border-color) flex justify-end">
-              <button
-                onClick={() => handleDeleteUser(user)}
-                disabled={loading || user.role === "owner"}
-                className="p-2 text-(--text-secondary) hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                title="Delete User"
-              >
-                <Trash2 size={20} />
-              </button>
-            </div>
-          </div>
-        ))}
-        {filteredUsers.length === 0 && (
-          <div className="col-span-full text-center py-20 bg-(--bg-card) rounded-3xl border border-(--border-color) border-dashed">
-            <User className="w-16 h-16 mx-auto mb-4 text-gray-500/20" />
-            <h3 className="text-xl font-bold text-(--text-main)">
-              No users found
-            </h3>
-            <p className="text-(--text-secondary)">
-              {searchTerm
-                ? "No users match your search."
-                : "No users registered on the platform."}
-            </p>
-          </div>
-        )}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-(--bg-main) border border-(--border-color)">
+                        {user.role === "admin" || user.role === "owner" ? (
+                          <Shield size={16} className="text-sky-500" />
+                        ) : (
+                          <User size={16} className="text-gray-400" />
+                        )}
+                      </div>
+                      <span className="font-bold text-sm text-(--text-main)">
+                        {user.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2 text-(--text-secondary) text-sm">
+                      <Mail size={14} />
+                      {user.email}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
+                        user.role === "owner"
+                          ? "bg-purple-100 text-purple-700 border-purple-200"
+                          : user.role === "admin"
+                          ? "bg-sky-100 text-sky-700 border-sky-200"
+                          : user.role === "vendor"
+                          ? "bg-amber-100 text-amber-700 border-amber-200"
+                          : "bg-gray-100 text-gray-700 border-gray-200"
+                      }`}
+                    >
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => handleDeleteUser(user)}
+                      disabled={loading || user.role === "owner"}
+                      className="p-2 text-(--text-secondary) hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                      title="Delete User"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {filteredUsers.length === 0 && (
+                <tr>
+                  <td colSpan="4" className="px-6 py-20 text-center">
+                    <User className="w-12 h-12 mx-auto mb-4 text-gray-500/20" />
+                    <p className="text-(--text-secondary)">
+                      {searchTerm
+                        ? "No users match your search."
+                        : "No users registered on the platform."}
+                    </p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

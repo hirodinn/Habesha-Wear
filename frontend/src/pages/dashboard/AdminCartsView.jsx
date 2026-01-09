@@ -61,71 +61,75 @@ const AdminCartsView = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCarts.map((cart) => (
-          <div
-            key={cart._id}
-            className="card-standard p-6 flex flex-col group hover:border-sky-500/30 bg-(--bg-card)"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-2 bg-(--bg-main) rounded-lg border border-(--border-color)">
-                <Clock className="w-5 h-5 text-(--text-secondary)" />
-              </div>
-              <span className="text-xs font-bold text-sky-500 bg-sky-500/10 px-2 py-1 rounded-md">
-                Active
-              </span>
-            </div>
-
-            <div className="space-y-3 mb-6">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-secondary)">
+      <div className="card-standard overflow-hidden bg-(--bg-card)">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-(--bg-main) text-(--text-secondary) text-xs uppercase tracking-wider">
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
                   Cart ID
-                </span>
-                <p className="text-xs font-mono text-(--text-main) truncate">
-                  {cart._id}
-                </p>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-secondary)">
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
                   User ID
-                </span>
-                <p className="text-xs font-mono text-(--text-main) truncate">
-                  {cart.userId}
-                </p>
-              </div>
-              <div className="pt-2">
-                <div className="flex justify-between items-center bg-(--bg-main) p-3 rounded-xl border border-(--border-color)">
-                  <span className="text-sm font-bold text-(--text-main)">
-                    Total Items
-                  </span>
-                  <span className="bg-sky-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                    {cart.products?.length || 0}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-auto pt-4 border-t border-(--border-color) flex justify-between items-center">
-              <span className="text-xs text-(--text-secondary)">
-                Last updated: 3 hours ago
-              </span>
-              <button className="p-2 text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/10 rounded-lg transition-all cursor-pointer">
-                <ChevronRight size={20} />
-              </button>
-            </div>
-          </div>
-        ))}
-        {filteredCarts.length === 0 && (
-          <div className="col-span-full text-center py-20 bg-(--bg-card) rounded-3xl border border-(--border-color) border-dashed">
-            <ShoppingCart className="w-16 h-16 mx-auto mb-4 text-sky-500/20" />
-            <h3 className="text-xl font-bold text-(--text-main)">
-              No active carts
-            </h3>
-            <p className="text-(--text-secondary)">
-              Perfect! No abandoned shopping carts currently.
-            </p>
-          </div>
-        )}
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
+                  Items
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
+                  Status
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color) text-right">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-(--border-color)">
+              {filteredCarts.map((cart) => (
+                <tr
+                  key={cart._id}
+                  className="group hover:bg-sky-500/5 transition-colors"
+                >
+                  <td className="px-6 py-4 font-mono text-xs text-(--text-secondary)">
+                    {cart._id}
+                  </td>
+                  <td className="px-6 py-4 font-mono text-xs text-(--text-main)">
+                    {cart.userId}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-sky-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        {cart.products?.length || 0}
+                      </span>
+                      <span className="text-xs text-(--text-secondary) font-medium italic">
+                        Items
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-[10px] font-bold text-sky-500 bg-sky-500/10 px-2.5 py-1 rounded-full border border-sky-500/20 uppercase tracking-wider">
+                      Active
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button className="p-2 text-(--text-secondary) hover:text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/10 rounded-lg transition-all cursor-pointer">
+                      <ChevronRight size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {filteredCarts.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="px-6 py-20 text-center">
+                    <ShoppingCart className="w-12 h-12 mx-auto mb-4 text-sky-500/20" />
+                    <p className="text-(--text-secondary)">
+                      Perfect! No abandoned shopping carts currently.
+                    </p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

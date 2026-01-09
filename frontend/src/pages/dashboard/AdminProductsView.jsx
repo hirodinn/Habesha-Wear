@@ -100,80 +100,117 @@ const AdminProductsView = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProducts.map((product) => (
-          <div
-            key={product._id}
-            className="card-standard overflow-hidden group hover:border-sky-500/30 bg-(--bg-card) flex flex-col"
-          >
-            <div className="relative aspect-square overflow-hidden bg-(--bg-main)">
-              {product.images?.[0] ? (
-                <img
-                  src={product.images[0]}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-gray-300">
-                  <ShoppingBag size={48} />
-                </div>
-              )}
-              <div className="absolute top-4 left-4">
-                <span className="px-2 py-1 rounded-md bg-white/80 dark:bg-black/80 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider text-(--text-main) border border-white/20">
-                  {product.category}
-                </span>
-              </div>
-            </div>
-
-            <div className="p-5 flex-1 flex flex-col">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-bold text-lg text-(--text-main) truncate flex-1">
-                  {product.name}
-                </h3>
-                <span className="font-bold text-sky-500">
-                  {product.price} Birr
-                </span>
-              </div>
-              <p className="text-(--text-secondary) text-sm line-clamp-2 mb-4">
-                {product.description}
-              </p>
-
-              <div className="mt-auto pt-4 border-t border-(--border-color) flex justify-between items-center">
-                <div className="text-xs text-(--text-secondary)">
-                  Stock:{" "}
-                  <span
-                    className={`font-bold ${
-                      product.stock < 5 ? "text-red-500" : "text-(--text-main)"
-                    }`}
-                  >
-                    {product.stock}
-                  </span>
-                </div>
-                <button
-                  onClick={() => handleDeleteProduct(product)}
-                  disabled={loading}
-                  className="p-2 text-(--text-secondary) hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all cursor-pointer"
-                  title="Delete Product"
+      <div className="card-standard overflow-hidden bg-(--bg-card)">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-(--bg-main) text-(--text-secondary) text-xs uppercase tracking-wider">
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
+                  Product
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
+                  Category
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
+                  Price
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color)">
+                  Stock
+                </th>
+                <th className="px-6 py-4 font-bold border-b border-(--border-color) text-right">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-(--border-color)">
+              {filteredProducts.map((product) => (
+                <tr
+                  key={product._id}
+                  className="group hover:bg-sky-500/5 transition-colors"
                 >
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-        {filteredProducts.length === 0 && (
-          <div className="col-span-full text-center py-20 bg-(--bg-card) rounded-3xl border border-(--border-color) border-dashed">
-            <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-gray-500/20" />
-            <h3 className="text-xl font-bold text-(--text-main)">
-              No products found
-            </h3>
-            <p className="text-(--text-secondary)">
-              {searchTerm
-                ? "No products match your search."
-                : "No products currently live on the platform."}
-            </p>
-          </div>
-        )}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-(--bg-main) border border-(--border-color) shrink-0">
+                        {product.images?.[0] ? (
+                          <img
+                            src={product.images[0]}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-300">
+                            <ShoppingBag size={20} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-sm text-(--text-main) truncate">
+                          {product.name}
+                        </h3>
+                        <p className="text-[10px] text-(--text-secondary) truncate max-w-[200px]">
+                          {product.description}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="px-2 py-1 rounded-md bg-(--bg-main) text-[10px] font-bold uppercase tracking-wider text-(--text-secondary) border border-(--border-color)">
+                      {product.category}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="font-bold text-sm text-sky-500">
+                      {product.price} Birr
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-sm font-bold ${
+                          product.stock < 5
+                            ? "text-red-500"
+                            : "text-(--text-main)"
+                        }`}
+                      >
+                        {product.stock}
+                      </span>
+                      <span className="text-[10px] text-(--text-secondary) font-medium uppercase tracking-tighter">
+                        Units
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end items-center gap-2">
+                      <button className="p-2 text-(--text-secondary) hover:text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/10 rounded-lg transition-all cursor-pointer">
+                        <ExternalLink size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(product)}
+                        disabled={loading}
+                        className="p-2 text-(--text-secondary) hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all cursor-pointer"
+                        title="Delete Product"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filteredProducts.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="px-6 py-20 text-center">
+                    <ShoppingBag className="w-12 h-12 mx-auto mb-4 text-gray-500/20" />
+                    <p className="text-(--text-secondary)">
+                      {searchTerm
+                        ? "No products match your search."
+                        : "No products currently live on the platform."}
+                    </p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

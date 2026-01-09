@@ -68,8 +68,9 @@ const AdminPendingView = () => {
 
   const filteredProducts = pendingProducts.filter(
     (p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.category.toLowerCase().includes(searchTerm.toLowerCase())
+      p.status === "pending" &&
+      (p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.category.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -89,7 +90,7 @@ const AdminPendingView = () => {
           </div>
         </div>
 
-        <div className="relative group min-w-[300px]">
+        <div className="relative group min-w-75">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-sky-500 transition-colors w-5 h-5" />
           <input
             type="text"
@@ -115,72 +116,69 @@ const AdminPendingView = () => {
       )}
 
       <div className="grid grid-cols-1 gap-4">
-        {filteredProducts.map(
-          (product) =>
-            product.status === "pending" && (
-              <div
-                key={product._id}
-                className="card-standard p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hover:border-sky-500/30 bg-(--bg-card)"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-bold text-xl text-(--text-main)">
-                      {product.name}
-                    </h3>
-                    <span className="px-2 py-0.5 rounded-full bg-(--bg-main) text-xs text-(--text-secondary) border border-(--border-color) uppercase tracking-wide">
-                      {product.category}
-                    </span>
-                  </div>
-                  <p className="text-(--text-secondary) text-sm mb-4 max-w-2xl leading-relaxed">
-                    {product.description}
-                  </p>
-                  <div className="flex gap-6 text-sm">
-                    <div className="flex flex-col">
-                      <span className="text-(--text-secondary) text-xs uppercase tracking-wider">
-                        Price
-                      </span>
-                      <span className="font-bold text-(--text-main) text-lg">
-                        {product.price} Birr
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-(--text-secondary) text-xs uppercase tracking-wider">
-                        Stock
-                      </span>
-                      <span className="font-bold text-(--text-main) text-lg">
-                        {product.stock} Units
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-(--text-secondary) text-xs uppercase tracking-wider">
-                        Vendor ID
-                      </span>
-                      <span className="font-medium text-(--text-main)">
-                        {product.userId || "N/A"}
-                      </span>
-                    </div>
-                  </div>
+        {filteredProducts.map((product) => (
+          <div
+            key={product._id}
+            className="card-standard p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hover:border-sky-500/30 bg-(--bg-card)"
+          >
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="font-bold text-xl text-(--text-main)">
+                  {product.name}
+                </h3>
+                <span className="px-2 py-0.5 rounded-full bg-(--bg-main) text-xs text-(--text-secondary) border border-(--border-color) uppercase tracking-wide">
+                  {product.category}
+                </span>
+              </div>
+              <p className="text-(--text-secondary) text-sm mb-4 max-w-2xl leading-relaxed">
+                {product.description}
+              </p>
+              <div className="flex gap-6 text-sm">
+                <div className="flex flex-col">
+                  <span className="text-(--text-secondary) text-xs uppercase tracking-wider">
+                    Price
+                  </span>
+                  <span className="font-bold text-(--text-main) text-lg">
+                    {product.price} Birr
+                  </span>
                 </div>
-
-                <div className="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
-                  <button
-                    onClick={() => handleApprove(product)}
-                    disabled={loading}
-                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-md shadow-green-500/20 cursor-pointer disabled:opacity-50"
-                  >
-                    <Check size={18} /> Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(product._id)}
-                    disabled={loading}
-                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-transparent border border-(--border-color) hover:bg-red-50 dark:hover:bg-red-900/10 hover:border-red-200 dark:hover:border-red-800 text-(--text-secondary) hover:text-red-500 font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
-                  >
-                    <X size={18} /> Reject
-                  </button>
+                <div className="flex flex-col">
+                  <span className="text-(--text-secondary) text-xs uppercase tracking-wider">
+                    Stock
+                  </span>
+                  <span className="font-bold text-(--text-main) text-lg">
+                    {product.stock} Units
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-(--text-secondary) text-xs uppercase tracking-wider">
+                    Vendor ID
+                  </span>
+                  <span className="font-medium text-(--text-main)">
+                    {product.userId || "N/A"}
+                  </span>
                 </div>
               </div>
-            )
-        )}
+            </div>
+
+            <div className="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+              <button
+                onClick={() => handleApprove(product)}
+                disabled={loading}
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-md shadow-green-500/20 cursor-pointer disabled:opacity-50"
+              >
+                <Check size={18} /> Approve
+              </button>
+              <button
+                onClick={() => handleReject(product._id)}
+                disabled={loading}
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-transparent border border-(--border-color) hover:bg-red-50 dark:hover:bg-red-900/10 hover:border-red-200 dark:hover:border-red-800 text-(--text-secondary) hover:text-red-500 font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50"
+              >
+                <X size={18} /> Reject
+              </button>
+            </div>
+          </div>
+        ))}
         {filteredProducts.length === 0 && (
           <div className="text-center py-20 bg-(--bg-card) rounded-3xl border border-(--border-color) border-dashed">
             <Check className="w-16 h-16 mx-auto mb-4 text-green-500/30" />

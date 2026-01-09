@@ -105,14 +105,16 @@ const Sidebar = () => {
           >
             Main Menu
           </div>
-          <NavItem
-            to="/"
-            icon={Home}
-            label="Shop"
-            isCollapsed={isCollapsed}
-            location={location}
-          />
-          {user && (
+          {user?.role !== "admin" && user?.role !== "owner" && (
+            <NavItem
+              to="/"
+              icon={Home}
+              label="Shop"
+              isCollapsed={isCollapsed}
+              location={location}
+            />
+          )}
+          {user && user.role !== "admin" && user.role !== "owner" && (
             <NavItem
               to="/dashboard"
               icon={LayoutDashboard}
@@ -271,16 +273,18 @@ const Sidebar = () => {
 
       {/* MOBILE FLOATING DOCK */}
       <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm h-16 bg-(--bg-card)/80 backdrop-blur-2xl border border-(--border-color) rounded-3xl shadow-2xl z-50 flex items-center justify-around px-2">
-        <Link
-          to="/"
-          className={`p-3 rounded-2xl transition-all ${
-            location.pathname === "/"
-              ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20"
-              : "text-(--text-secondary)"
-          }`}
-        >
-          <Home size={22} />
-        </Link>
+        {user?.role !== "admin" && user?.role !== "owner" && (
+          <Link
+            to="/"
+            className={`p-3 rounded-2xl transition-all ${
+              location.pathname === "/"
+                ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20"
+                : "text-(--text-secondary)"
+            }`}
+          >
+            <Home size={22} />
+          </Link>
+        )}
         {user && user.role !== "vendor" && (
           <Link
             to="/cart"
@@ -298,7 +302,7 @@ const Sidebar = () => {
             )}
           </Link>
         )}
-        {user ? (
+        {user && user.role !== "admin" && user.role !== "owner" ? (
           <Link
             to="/dashboard"
             className={`p-3 rounded-2xl transition-all ${
@@ -310,16 +314,18 @@ const Sidebar = () => {
             <LayoutDashboard size={22} />
           </Link>
         ) : (
-          <Link
-            to="/login"
-            className={`p-3 rounded-2xl transition-all ${
-              location.pathname === "/login"
-                ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20"
-                : "text-(--text-secondary)"
-            }`}
-          >
-            <UserIcon size={22} />
-          </Link>
+          !user && (
+            <Link
+              to="/login"
+              className={`p-3 rounded-2xl transition-all ${
+                location.pathname === "/login"
+                  ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20"
+                  : "text-(--text-secondary)"
+              }`}
+            >
+              <UserIcon size={22} />
+            </Link>
+          )
         )}
         <button
           onClick={() => dispatch(toggleDarkMode())}
