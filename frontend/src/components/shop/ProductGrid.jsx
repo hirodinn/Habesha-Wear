@@ -137,17 +137,19 @@ const ProductGrid = ({ isPublic = false }) => {
                 </span>
               </div>
 
-              <button
-                onClick={() => handleAddToCart(product)}
-                disabled={addingToCart === product._id || product.stock <= 0}
-                className="absolute bottom-4 right-4 bg-white text-black p-3 rounded-full shadow-lg translate-y-20 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-sky-600 hover:text-white hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {addingToCart === product._id ? (
-                  <Loader2 size={20} className="animate-spin" />
-                ) : (
-                  <ShoppingCart size={20} />
-                )}
-              </button>
+              {(!user || user.role !== "vendor") && (
+                <button
+                  onClick={() => handleAddToCart(product)}
+                  disabled={addingToCart === product._id || product.stock <= 0}
+                  className="absolute bottom-4 right-4 bg-white text-black p-3 rounded-full shadow-lg translate-y-20 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-sky-600 hover:text-white hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {addingToCart === product._id ? (
+                    <Loader2 size={20} className="animate-spin" />
+                  ) : (
+                    <ShoppingCart size={20} />
+                  )}
+                </button>
+              )}
             </div>
 
             <div className="p-5 flex flex-col flex-1 bg-[var(--bg-card)]">

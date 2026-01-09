@@ -29,9 +29,13 @@ const Cart = () => {
 
   useEffect(() => {
     if (user) {
+      if (user.role === "vendor") {
+        navigate("/dashboard");
+        return;
+      }
       dispatch(getCart());
     }
-  }, [user, dispatch]);
+  }, [user, dispatch, navigate]);
 
   const calculateTotal = () => {
     // Note: Backend cart might not populate product details in the simple items array

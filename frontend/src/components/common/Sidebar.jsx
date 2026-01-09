@@ -108,12 +108,14 @@ const Sidebar = () => {
           {user && (
             <NavItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" />
           )}
-          <NavItem
-            to="/cart"
-            icon={ShoppingCart}
-            label="Cart"
-            badge={cartItems.length}
-          />
+          {user && user.role !== "vendor" && (
+            <NavItem
+              to="/cart"
+              icon={ShoppingCart}
+              label="Cart"
+              badge={cartItems.length}
+            />
+          )}
           <NavItem to="/about" icon={Info} label="About" />
         </nav>
 
@@ -206,21 +208,23 @@ const Sidebar = () => {
         >
           <Home size={22} />
         </Link>
-        <Link
-          to="/cart"
-          className={`p-3 rounded-2xl transition-all relative ${
-            location.pathname === "/cart"
-              ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20"
-              : "text-[var(--text-secondary)]"
-          }`}
-        >
-          <ShoppingCart size={22} />
-          {cartItems.length > 0 && (
-            <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-[var(--bg-card)]">
-              {cartItems.length}
-            </span>
-          )}
-        </Link>
+        {user && user.role !== "vendor" && (
+          <Link
+            to="/cart"
+            className={`p-3 rounded-2xl transition-all relative ${
+              location.pathname === "/cart"
+                ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20"
+                : "text-[var(--text-secondary)]"
+            }`}
+          >
+            <ShoppingCart size={22} />
+            {cartItems.length > 0 && (
+              <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-[var(--bg-card)]">
+                {cartItems.length}
+              </span>
+            )}
+          </Link>
+        )}
         {user ? (
           <Link
             to="/dashboard"
