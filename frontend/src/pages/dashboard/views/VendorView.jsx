@@ -9,6 +9,8 @@ import {
   ChevronRight,
   X,
   Loader2,
+  Upload,
+  Image as ImageIcon,
 } from "lucide-react";
 
 const VendorView = () => {
@@ -21,6 +23,8 @@ const VendorView = () => {
     category: "",
     stock: "",
   });
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
@@ -37,12 +41,69 @@ const VendorView = () => {
     }
   };
 
+  const handleImageSelect = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    // Validate file types
+    const validTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ];
+    const invalidFiles = files.filter((f) => !validTypes.includes(f.type));
+
+    if (invalidFiles.length > 0) {
+      setMessage({
+        type: "error",
+        text: "Please select only image files (JPEG, PNG, WebP, or GIF)",
+      });
+      return;
+    }
+
+    // Limit to 5 images total
+    const newFiles = [...selectedImages, ...files].slice(0, 5);
+    setSelectedImages(newFiles);
+
+    // Create preview URLs
+    const previews = newFiles.map((file) => URL.createObjectURL(file));
+    setImagePreviews(previews);
+  };
+
+  const handleRemoveImage = (index) => {
+    const newImages = selectedImages.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+    setSelectedImages(newImages);
+    setImagePreviews(newPreviews);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
+
     try {
-      await axios.post("/api/preproducts", newProduct);
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append("name", newProduct.name);
+      formData.append("description", newProduct.description);
+      formData.append("price", newProduct.price);
+      formData.append("category", newProduct.category);
+      formData.append("stock", newProduct.stock);
+
+      // Append images
+      selectedImages.forEach((image) => {
+        formData.append("images", image);
+      });
+
+      await axios.post("/api/preproducts", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       setMessage({ type: "success", text: "Product submitted for approval!" });
       setShowForm(false);
       setNewProduct({
@@ -52,6 +113,8 @@ const VendorView = () => {
         category: "",
         stock: "",
       });
+      setSelectedImages([]);
+      setImagePreviews([]);
       fetchPreProducts();
     } catch (error) {
       setMessage({
@@ -219,6 +282,62 @@ const VendorView = () => {
               />
             </div>
 
+            {/* Image Upload Section */}
+            <div className="md:col-span-2 space-y-3">
+              <label className="text-sm font-medium text-[var(--text-secondary)]">
+                Product Images (Optional, max 5)
+              </label>
+
+              <div className="border-2 border-dashed border-(--border-color) rounded-xl p-6 text-center hover:border-sky-500/50 transition-colors cursor-pointer">
+                <input
+                  type="file"
+                  id="imageUpload"
+                  multiple
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="imageUpload"
+                  className="cursor-pointer flex flex-col items-center gap-2"
+                >
+                  <div className="p-3 bg-sky-500/10 rounded-full">
+                    <Upload className="w-6 h-6 text-sky-500" />
+                  </div>
+                  <div>
+                    <p className="text-(--text-main) font-medium">
+                      Click to upload or drag and drop
+                    </p>
+                    <p className="text-xs text-(--text-secondary)">
+                      PNG, JPG, WebP or GIF (max 5MB each, up to 5 images)
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              {/* Image Previews */}
+              {imagePreviews.length > 0 && (
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-24 object-cover rounded-lg border-2 border-(--border-color)"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-red-600"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="md:col-span-2 space-y-2">
               <label className="text-sm font-medium text-[var(--text-secondary)]">
                 Category
@@ -285,6 +404,25 @@ const VendorView = () => {
                 {product.status}
               </span>
             </div>
+
+            {/* Product Images */}
+            {product.images && product.images.length > 0 ? (
+              <div className="mb-3">
+                <div className="relative h-40 bg-(--bg-main) rounded-lg overflow-hidden">
+                  <img
+                    src={product.images[0]}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                  {product.images.length > 1 && (
+                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 text-white text-xs rounded-full flex items-center gap-1">
+                      <ImageIcon size={12} />
+                      {product.images.length}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : null}
 
             <div className="mb-4 pt-2">
               <h3 className="font-bold text-lg text-[var(--text-main)] mb-1">

@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Check, X, Clock, AlertCircle, Search } from "lucide-react";
+import {
+  Check,
+  X,
+  Clock,
+  AlertCircle,
+  Search,
+  Image as ImageIcon,
+} from "lucide-react";
 
 const AdminPendingView = () => {
   const [pendingProducts, setPendingProducts] = useState([]);
@@ -119,8 +126,33 @@ const AdminPendingView = () => {
         {filteredProducts.map((product) => (
           <div
             key={product._id}
-            className="card-standard p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hover:border-sky-500/30 bg-(--bg-card)"
+            className="card-standard p-6 flex flex-col md:flex-row justify-between items-start gap-6 group hover:border-sky-500/30 bg-(--bg-card)"
           >
+            {/* Product Images */}
+            {product.images && product.images.length > 0 ? (
+              <div className="w-full md:w-48 shrink-0">
+                <div className="grid grid-cols-2 gap-2">
+                  {product.images.slice(0, 4).map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={img}
+                      alt={`${product.name} ${idx + 1}`}
+                      className="w-full h-20 object-cover rounded-lg border-2 border-(--border-color) hover:scale-105 transition-transform cursor-pointer"
+                    />
+                  ))}
+                </div>
+                {product.images.length > 4 && (
+                  <p className="text-xs text-(--text-secondary) text-center mt-1">
+                    +{product.images.length - 4} more
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="w-full md:w-48 h-20 shrink-0 bg-(--bg-main) rounded-lg border-2 border-dashed border-(--border-color) flex items-center justify-center">
+                <ImageIcon className="w-8 h-8 text-(--text-secondary) opacity-30" />
+              </div>
+            )}
+
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <h3 className="font-bold text-xl text-(--text-main)">

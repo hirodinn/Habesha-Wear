@@ -6,6 +6,8 @@ import {
   validatePreProductUpdate,
 } from "../model/preProduct.js";
 import { validateId } from "../utils/validateId.js";
+import upload from "../middleware/upload.js";
+import cloudinary from "../config/cloudinary.js";
 
 const router = express.Router();
 
@@ -36,7 +38,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", upload.array("images", 5), async (req, res) => {
   res.set({
     "Cache-Control": "no-store",
     Pragma: "no-cache",
@@ -50,15 +52,42 @@ router.post("/", async (req, res) => {
   const obj = { ...req.body };
   const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
   obj.ownedBy = decoded._id;
-  console.log(obj);
-
-  const { error } = validateNewPreProduct(obj);
-  if (error)
-    return res
-      .status(400)
-      .json({ success: false, message: error.details[0].message });
 
   try {
+    // Upload images to Cloudinary if any
+    const imageUrls = [];
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        // Upload to Cloudinary using upload_stream
+        const uploadPromise = new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "habesha-wear/products",
+              resource_type: "image",
+              transformation: [{ quality: "auto", fetch_format: "auto" }],
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result.secure_url);
+            }
+          );
+          stream.end(file.buffer);
+        });
+
+        const url = await uploadPromise;
+        imageUrls.push(url);
+      }
+    }
+
+    // Add image URLs to product data
+    obj.images = imageUrls;
+
+    const { error } = validateNewPreProduct(obj);
+    if (error)
+      return res
+        .status(400)
+        .json({ success: false, message: error.details[0].message });
+
     if (decoded.role === "vendor") {
       const preProduct = new PreProduct(obj);
       await preProduct.save();
@@ -69,6 +98,7 @@ router.post("/", async (req, res) => {
         .json({ success: false, message: "user not allowed to post products" });
     }
   } catch (err) {
+    console.error("Error creating preproduct:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
@@ -127,12 +157,10 @@ router.delete("/:id", async (req, res) => {
 
   const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
   if (decoded.role !== "owner" && decoded.role !== "admin")
-    return res
-      .status(403)
-      .json({
-        success: false,
-        message: "Only Admins/Owners can delete requests",
-      });
+    return res.status(403).json({
+      success: false,
+      message: "Only Admins/Owners can delete requests",
+    });
 
   try {
     const preProduct = await PreProduct.findByIdAndDelete(req.params.id);
